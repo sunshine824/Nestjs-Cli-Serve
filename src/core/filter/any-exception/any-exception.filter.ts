@@ -28,14 +28,14 @@ export class AllExceptionsFilter implements ExceptionFilter {
           Method: ${request.method}
           IP: ${request.ip}
           Status code: ${status}
-          Response: ${exception} \n  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+          Response: ${exception.toString()} \n  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     `;
     Logger.error(logFormat);
 
     response.status(200).json({
       code: status,
       data: null,
-      message: `Service Error: ${exception}`,
+      message: `Service Error: ${exception.toString()}`,
     });
   }
 }

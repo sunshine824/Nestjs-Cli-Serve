@@ -10,8 +10,8 @@ import { Repository } from 'typeorm';
 
 export class JwtStorage extends PassportStrategy(Strategy) {
   constructor(
-    // @InjectRepository(User)
-    // private readonly userRepository: Repository<User>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly userService: UserService,
   ) {
     super({

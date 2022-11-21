@@ -1,5 +1,3 @@
-// 项目根目录新建config文件用于保存配置文件, 新建log4jsConfig.ts配置文件
-
 import * as path from 'path';
 const baseLogPath = path.resolve(__dirname, '../../logs');
 
@@ -13,7 +11,7 @@ const log4jsConfig = {
       alwaysIncludePattern: true, // 为true, 则每个文件都会按pattern命名，否则最新的文件不会按照pattern命名
       pattern: 'yyyy-MM-dd', // 日期格式
       // maxLogSize: 10485760,  // 日志大小
-      daysToKeep: 30, // 文件保存日期30天
+      daysToKeep: 15, // 文件保存日期15天
       numBackups: 3, //  配置日志文件最多存在个数
       compress: true, // 配置日志文件是否压缩
       category: 'http', // category 类型
