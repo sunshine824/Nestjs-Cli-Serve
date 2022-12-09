@@ -23,11 +23,12 @@ export class TransformInterceptor implements NestInterceptor {
             <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`;
         Logger.info(logFormat);
         Logger.access(logFormat);
-        
+
         return {
-          data,
+          data: data.result || data,
           code: 0,
-          msg: '请求成功',
+          msg: data.msg,
+          status: true,
         };
       }),
     );

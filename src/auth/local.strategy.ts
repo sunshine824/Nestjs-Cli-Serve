@@ -6,7 +6,7 @@ import { IStrategyOptions, Strategy } from 'passport-local';
 import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 
-export class LocalStorage extends PassportStrategy(Strategy) {
+export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,

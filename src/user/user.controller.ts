@@ -23,7 +23,6 @@ import {
 } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 import { AuthGuard } from '@nestjs/passport';
-import { LoginUserDto } from './dto/login-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdatePassDto } from './dto/updatePass-user.dto';
 
@@ -49,14 +48,6 @@ export class UserController {
   getUserInfo(@Req() req) {
     delete req.user.password;
     return req.user;
-  }
-
-  @Post('login')
-  @ApiOperation({ summary: '用户登录' })
-  @UseInterceptors(ClassSerializerInterceptor)
-  @UseGuards(AuthGuard('local'))
-  login(@Body() user: LoginUserDto, @Req() req) {
-    return this.userService.login(req.user);
   }
 
   @Post('update')

@@ -7,41 +7,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdatePassDto } from './dto/updatePass-user.dto';
+import { RedisInstance } from 'src/cache/redis';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    private jwtService: JwtService,
   ) {}
-
-  // 生成token
-  createToken(user: Partial<User>) {
-    return this.jwtService.sign({
-      id: user.id,
-      username: user.username,
-      role: user.role,
-    });
-  }
-
-  // 用户登录
-  login(user: Partial<User>) {
-    return {
-      token: this.createToken(user),
-    };
-  }
-
-  // 获取用户信息
-  getUser(user: Partial<User>) {
-    const existUser = this.userRepository
-      .createQueryBuilder('user')
-      .where('user.id=:id', { id: user.id })
-      .where('user.username=:username', { username: user.username })
-      .getOne();
-
-    return existUser;
-  }
 
   // 用户注册
   async register(createUserDto: CreateUserDto) {
