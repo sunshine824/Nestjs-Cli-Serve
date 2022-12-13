@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { listToTree } from 'src/utils/utils';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { OrganizationDto } from './dto/organization.dto';
 import { OrganizationEntity } from './entities/organization.entity';
 
@@ -48,8 +48,24 @@ export class OrganizationService {
 
   // 获取组织结构树
   async getTree(name: string): Promise<OrganizationDto[]> {
-    const data = await this.OrganizationRepository.find();
+    const data = await this.OrganizationRepository.find({
+      ...(name && { name: Like(`%${name}%`) }), // == where: `name like '%销售%'`
+    });
     const treeData = listToTree<OrganizationDto>(data);
     return treeData;
+  }
+
+  // 通过组织id获取数据
+  async getOrganizationInfo(id: string): Promise<OrganizationEntity> {
+    return this.OrganizationRepository.findOne({ id });
+  }
+
+  // 删除组织
+  async delete(id: string) {
+    const existPost = await this.OrganizationRepository.findOne(id);
+    if (!existPost) {
+      throw new HttpException(`id为${id}的菜单不存在`, 400);
+    }
+    return await this.OrganizationRepository.remove(existPost);
   }
 }

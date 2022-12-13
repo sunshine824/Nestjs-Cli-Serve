@@ -18,6 +18,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import {
   ApiBearerAuth,
   ApiOperation,
+  ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -41,15 +43,6 @@ export class UserController {
     return this.userService.register(createUserDto);
   }
 
-  @Get()
-  @ApiOperation({ summary: '获取用户信息' })
-  @ApiBearerAuth() // swagger文档设置token
-  @UseGuards(AuthGuard('jwt'))
-  getUserInfo(@Req() req) {
-    delete req.user.password;
-    return req.user;
-  }
-
   @Post('update')
   @ApiOperation({ summary: '修改用户信息' })
   @ApiBearerAuth() // swagger文档设置token
@@ -66,5 +59,19 @@ export class UserController {
   @UseGuards(AuthGuard('jwt'))
   updatePass(@Req() req, @Body() data: UpdatePassDto) {
     return this.userService.updatePass(req.user, data);
+  }
+
+  @Post('getUserInfo')
+  @ApiOperation({ summary: '根据用户id获取用户信息' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @ApiQuery({
+    name: 'id',
+    description: '用户id',
+  })
+  async getUserInfo(@Query('id') id: string) {
+    const res = await this.userService.getUserInfo(id);
+    delete res.password;
+    return res;
   }
 }

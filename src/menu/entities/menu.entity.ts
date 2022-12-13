@@ -1,23 +1,27 @@
-import { User } from 'src/user/entities/user.entity';
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('organization')
-export class OrganizationEntity {
+@Entity('menu')
+export class MenuEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ length: 100, default: '' })
-  name: string; // 组织机构名称
+  name: string; // 菜单名称
+
+  @Column('simple-enum', { enum: ['catalog', 'menu', 'button'] })
+  type: string; //菜单类型
+
+  @Column()
+  url: string; //菜单URL
 
   @Column({ default: '' })
-  parentId: string; // 父级组织id
+  parentId: string; // 父级菜单id
 
   @Column({ default: '' })
   remark: string; //备注
 
-  // 关联组织机构id
-  @OneToOne((type) => User, (user) => user.organization)
-  user: User;
+  @Column({ default: 0 })
+  order: number; // 排序号
 
   @Column({
     name: 'create_time',

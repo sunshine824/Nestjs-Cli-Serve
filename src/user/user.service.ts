@@ -7,23 +7,28 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdatePassDto } from './dto/updatePass-user.dto';
-import { RedisInstance } from 'src/cache/redis';
+import { OrganizationService } from 'src/organization/organization.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private readonly organizationService: OrganizationService,
   ) {}
 
   // 用户注册
   async register(createUserDto: CreateUserDto) {
-    const { username } = createUserDto;
+    const { username, organizationId } = createUserDto;
     const data = await this.userRepository.findOne({ where: { username } });
     if (data) {
       throw new HttpException({ message: '用户已存在', code: 400 }, 200);
     }
+    const organization = await this.organizationService.getOrganizationInfo(
+      organizationId,
+    );
     const newUser = await this.userRepository.create(createUserDto);
+    newUser.organization = organization;
     return await this.userRepository.save(newUser);
   }
 
@@ -36,6 +41,11 @@ export class UserService {
       .where('user.id=:id', { id: user.id })
       .execute();
     return await this.userRepository.findOne({ id: user.id });
+  }
+
+  // 根据用户名获取用户信息
+  async getUserInfo(id: string): Promise<User> {
+    return await this.userRepository.findOne(id);
   }
 
   // 修改用户密码

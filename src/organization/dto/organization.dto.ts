@@ -7,8 +7,7 @@ export class OrganizationDto {
   @ApiPropertyOptional({ description: '' })
   readonly id: string;
 
-  @ApiProperty({ description: '组织机构名称' })
-  @IsNotEmpty({ message: '组织机构名称必填' })
+  @ApiPropertyOptional({ description: '组织机构名称' })
   readonly name: string;
 
   @ApiPropertyOptional({ description: '父级组织机构id' })

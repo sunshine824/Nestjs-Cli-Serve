@@ -7,12 +7,15 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -44,12 +47,25 @@ export class OrganizationController {
   @ApiOperation({ summary: '获取组织机构树' })
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  @ApiParam({
+  @ApiQuery({
     name: 'name',
     required: false,
     description: '组织机构名称',
   })
-  async getTree(@Param('name') name: string): Promise<OrganizationDto[]> {
+  async getTree(@Query('name') name: string): Promise<OrganizationDto[]> {
     return await this.organizationService.getTree(name);
+  }
+
+  @Post('delete')
+  @ApiOperation({ summary: '删除组织' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @ApiQuery({
+    name: 'id',
+    required: true,
+    description: '组织机构id',
+  })
+  async delete(@Query('id') id: string) {
+    return await this.organizationService.delete(id);
   }
 }
