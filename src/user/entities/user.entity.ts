@@ -1,6 +1,14 @@
-import { Column, Entity, PrimaryGeneratedColumn, BeforeInsert, OneToOne, JoinColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  BeforeInsert,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { OrganizationEntity } from 'src/organization/entities/organization.entity';
+import { RoleEntity } from 'src/role/entities/role.entity';
 const bcrypt = require('bcryptjs');
 
 @Entity('user')
@@ -27,12 +35,15 @@ export class User {
   @Column({ default: '' })
   email: string;
 
-  @Column('simple-enum', { enum: ['root', 'author', 'visitor'] })
-  role: string; // 用户角色
-
-  @OneToOne(type=>OrganizationEntity, organization=>organization.user)
+  // 关联组织机构表
+  @OneToOne((type) => OrganizationEntity, (organization) => organization.user)
   @JoinColumn()
-  organization:OrganizationEntity
+  organization: OrganizationEntity;
+
+  // 关联角色表
+  @OneToOne((type) => RoleEntity, (role) => role.user)
+  @JoinColumn()
+  role: RoleEntity;
 
   @Column({
     name: 'create_time',

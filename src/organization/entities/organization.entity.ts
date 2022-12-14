@@ -15,7 +15,7 @@ export class OrganizationEntity {
   @Column({ default: '' })
   remark: string; //备注
 
-  // 关联组织机构id
+  // 关联用户表
   @OneToOne((type) => User, (user) => user.organization)
   user: User;
 

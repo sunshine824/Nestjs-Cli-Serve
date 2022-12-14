@@ -8,6 +8,7 @@ import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdatePassDto } from './dto/updatePass-user.dto';
 import { OrganizationService } from 'src/organization/organization.service';
+import { RoleService } from 'src/role/role.service';
 
 @Injectable()
 export class UserService {
@@ -15,11 +16,12 @@ export class UserService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private readonly organizationService: OrganizationService,
+    private readonly roleService: RoleService,
   ) {}
 
   // 用户注册
   async register(createUserDto: CreateUserDto) {
-    const { username, organizationId } = createUserDto;
+    const { username, organizationId, roleId } = createUserDto;
     const data = await this.userRepository.findOne({ where: { username } });
     if (data) {
       throw new HttpException({ message: '用户已存在', code: 400 }, 200);
@@ -27,9 +29,13 @@ export class UserService {
     const organization = await this.organizationService.getOrganizationInfo(
       organizationId,
     );
-    const newUser = await this.userRepository.create(createUserDto);
-    newUser.organization = organization;
-    return await this.userRepository.save(newUser);
+    const role = await this.roleService.getRoleInfo(roleId);
+    const postParam: Partial<User> = {
+      ...createUserDto,
+      organization: organization,
+      role: role,
+    };
+    return await this.userRepository.save(postParam);
   }
 
   // 更新用户信息

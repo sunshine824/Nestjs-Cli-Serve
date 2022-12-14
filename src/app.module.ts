@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 import { OrganizationModule } from './organization/organization.module';
 import { AuthModule } from './auth/auth.module';
 import { MenuModule } from './menu/menu.module';
+import { RoleModule } from './role/role.module';
 
 // 环境配置信息
 import envConfig from '../config';
@@ -19,6 +20,7 @@ import envConfig from '../config';
     OrganizationModule,
     AuthModule,
     MenuModule,
+    RoleModule,
   ],
   controllers: [AppController],
   providers: [AppService],

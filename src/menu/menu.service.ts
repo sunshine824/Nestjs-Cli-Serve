@@ -65,4 +65,9 @@ export class MenuService {
     }
     return await this.menuRepository.remove(existPost);
   }
+
+  // 通过ids批量查询
+  async findByIds(ids: string[]) {
+    return this.menuRepository.findByIds(ids);
+  }
 }

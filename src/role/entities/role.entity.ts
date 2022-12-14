@@ -1,37 +1,36 @@
-import { RoleEntity } from 'src/role/entities/role.entity';
+import { MenuEntity } from 'src/menu/entities/menu.entity';
+import { User } from 'src/user/entities/user.entity';
 import {
   Column,
   Entity,
+  JoinTable,
   ManyToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity('menu')
-export class MenuEntity {
+@Entity('role')
+export class RoleEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ length: 100, default: '' })
   name: string; // 菜单名称
 
-  @Column('simple-enum', { enum: ['catalog', 'menu', 'button'] })
-  type: string; //菜单类型
-
-  @Column()
-  url: string; //菜单URL
-
-  @Column({ default: '' })
-  parentId: string; // 父级菜单id
-
   @Column({ default: '' })
   remark: string; //备注
 
-  @Column({ default: 0 })
-  order: number; // 排序号
+  // 关联用户表
+  @OneToOne((type) => User, (user) => user.role)
+  user: string;
 
-  @ManyToMany((type) => RoleEntity, (role) => role.menus)
-  roles: RoleEntity[];
+  @ManyToMany((type) => MenuEntity, (menu) => menu.roles)
+  @JoinTable({
+    name: 'role_menu_relation',
+    joinColumns: [{ name: 'roleId' }],
+    inverseJoinColumns: [{ name: 'menuId' }],
+  })
+  menus: MenuEntity[];
 
   @Column({
     name: 'create_time',
