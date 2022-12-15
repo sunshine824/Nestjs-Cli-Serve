@@ -1,8 +1,9 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MenuService } from 'src/menu/menu.service';
-import { Pagination } from 'src/utils/pagination';
+import { IPageResult, Pagination } from 'src/utils/pagination';
 import { Repository } from 'typeorm';
+import { QueryRoleDto } from './dto/query-role.dto';
 import { RoleDto } from './dto/role.dto';
 import { RoleEntity } from './entities/role.entity';
 
@@ -60,22 +61,20 @@ export class RoleService {
   }
 
   // 查询角色列表(分页)
-  async getPage(query) {
+  async getPage(query: QueryRoleDto): Promise<IPageResult<RoleEntity>> {
     const page = (query.pageNo - 1) * query.pageSize;
     const limit = page + query.pageSize;
     const pagination = new Pagination<RoleEntity>(
       { current: query.pageNo, size: query.pageSize },
       RoleEntity,
     );
-    const result = pagination.findByPage({
-      tableName: 'role',
-      builder: {
-        skip: page,
-        take: limit,
-        where: `role.name like '%${query.name}%'`,
-        orderBy: ['create_time', 'DESC'],
-      },
-    });
+    const db = this.RoleRepository.createQueryBuilder('role')
+      .skip(page)
+      .take(limit)
+      .where(`role.name like '%${query.name}%'`)
+      .orderBy('create_time', 'DESC');
+
+    const result = pagination.findByPage(db);
     return result;
   }
 

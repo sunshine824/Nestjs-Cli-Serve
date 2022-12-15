@@ -1,6 +1,5 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 import { compareSync, hashSync } from 'bcryptjs';
 import { CreateUserDto } from './dto/create-user.dto';

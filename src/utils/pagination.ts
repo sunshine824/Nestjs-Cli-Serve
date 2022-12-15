@@ -1,5 +1,4 @@
-import { resolve } from 'path';
-import { createQueryBuilder, getConnection, SelectQueryBuilder } from 'typeorm';
+import { getConnection, SelectQueryBuilder } from 'typeorm';
 
 interface IFindPageFun {
   tableName: string;
@@ -54,12 +53,9 @@ export class Pagination<T> {
   }
 
   // 分页查询
-  public async findByPage(params: IFindPageFun) {
-    const { builder, ...args } = params;
-    const [data, total] = await this.generateCondition(
-      builder,
-      args.tableName,
-    ).getManyAndCount();
+  public async findByPage(db: SelectQueryBuilder<T>) {
+    const [data, total] = await db.getManyAndCount();
+    // 总页数
     const pages = Math.ceil(total / this.Page.size);
     // 返回分页数据
     const result = { ...this.Page, ...{ records: data, total, pages } };
