@@ -76,4 +76,12 @@ export class UserController {
     delete res.password;
     return res;
   }
+
+  @Post('logout')
+  @ApiOperation({ summary: '注销登录' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  logout(@Req() req) {
+    return this.userService.logout(req.user);
+  }
 }

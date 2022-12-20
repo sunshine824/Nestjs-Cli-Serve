@@ -8,6 +8,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdatePassDto } from './dto/updatePass-user.dto';
 import { OrganizationService } from 'src/organization/organization.service';
 import { RoleService } from 'src/role/role.service';
+import { RedisInstance } from 'src/cache/redis';
 
 @Injectable()
 export class UserService {
@@ -48,6 +49,13 @@ export class UserService {
     return await this.userRepository.findOne({
       where: { id },
     });
+  }
+
+  // 注销登录
+  async logout(user: Partial<User>) {
+    const redis = new RedisInstance(0);
+    redis.removeItem(`user-token-${user.id}-${user.username}`);
+    return '注销成功！';
   }
 
   // 修改用户密码
