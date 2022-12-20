@@ -35,7 +35,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     //单点登陆验证
     if (cacheToken !== originToken) {
       throw new HttpException(
-        { message: '您账户已经在另一处登陆，请重新登陆', code: 400 },
+        { message: '登录信息已过期，请重新登录！', code: 400 },
         200,
       );
     }
