@@ -20,10 +20,6 @@ export class RoleEntity {
   @Column({ default: '' })
   remark: string; //备注
 
-  // 关联用户表
-  @OneToOne((type) => User, (user) => user.role)
-  user: string;
-
   @ManyToMany((type) => MenuEntity, (menu) => menu.roles)
   @JoinTable({
     name: 'role_menu_relation',

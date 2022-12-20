@@ -39,8 +39,8 @@ export class UserController {
   @UseInterceptors(AnyFilesInterceptor())
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiResponse({ status: 201, type: [User] })
-  register(@Body() createUserDto: CreateUserDto) {
-    return this.userService.register(createUserDto);
+  async register(@Body() createUserDto: CreateUserDto) {
+    return await this.userService.register(createUserDto);
   }
 
   @Post('update')
@@ -67,9 +67,11 @@ export class UserController {
   @UseGuards(AuthGuard('jwt'))
   @ApiQuery({
     name: 'id',
+    required: false,
     description: '用户id',
   })
-  async getUserInfo(@Query('id') id: string) {
+  async getUserInfo(@Req() req, @Query('id') id: string) {
+    if (!id) id = req.user.id;
     const res = await this.userService.getUserInfo(id);
     delete res.password;
     return res;

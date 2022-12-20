@@ -15,10 +15,6 @@ export class OrganizationEntity {
   @Column({ default: '' })
   remark: string; //备注
 
-  // 关联用户表
-  @OneToOne((type) => User, (user) => user.organization)
-  user: User;
-
   @Column({
     name: 'create_time',
     type: 'timestamp',

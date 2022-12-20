@@ -18,11 +18,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(username: string, password: string) {
-    const user = await this.userRepository
-      .createQueryBuilder('user')
-      .addSelect('user.password') //通过addSelect添加password查询， 否则无法做密码对比
-      .where('user.username=:username', { username })
-      .getOne();
+    const user = await this.userRepository.findOne({
+      where: { username },
+    });
 
     if (!user) {
       throw new HttpException({ message: '用户名不存在', code: 400 }, 200);

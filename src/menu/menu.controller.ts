@@ -30,7 +30,7 @@ export class MenuController {
   @Post('add')
   @ApiOperation({ summary: '新增菜单' })
   @ApiBearerAuth() // swagger文档设置token
-  @UseGuards(AuthGuard('jwt'))
+  // @UseGuards(AuthGuard('jwt'))
   async create(@Body() post: MenuDto) {
     return await this.menuService.create(post);
   }

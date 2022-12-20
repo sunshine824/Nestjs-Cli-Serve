@@ -14,7 +14,7 @@ const bcrypt = require('bcryptjs');
 @Entity('user')
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column({ length: 100 })
   username: string; // 用户名
@@ -35,15 +35,11 @@ export class User {
   @Column({ default: '' })
   email: string;
 
-  // 关联组织机构表
-  @OneToOne((type) => OrganizationEntity, (organization) => organization.user)
-  @JoinColumn()
-  organization: OrganizationEntity;
+  @Column({ default: '' })
+  organizationId: string;
 
-  // 关联角色表
-  @OneToOne((type) => RoleEntity, (role) => role.user)
-  @JoinColumn()
-  role: RoleEntity;
+  @Column({ default: '' })
+  roleId: string;
 
   @Column({
     name: 'create_time',

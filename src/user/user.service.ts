@@ -20,21 +20,14 @@ export class UserService {
 
   // 用户注册
   async register(createUserDto: CreateUserDto) {
-    const { username, organizationId, roleId } = createUserDto;
+    const { username } = createUserDto;
     const data = await this.userRepository.findOne({ where: { username } });
     if (data) {
       throw new HttpException({ message: '用户已存在', code: 400 }, 200);
     }
-    const organization = await this.organizationService.getOrganizationInfo(
-      organizationId,
-    );
-    const role = await this.roleService.getRoleInfo(roleId);
-    const postParam: Partial<User> = {
-      ...createUserDto,
-      organization: organization,
-      role: role,
-    };
-    return await this.userRepository.save(postParam);
+    // 必须先create才能进@BeforeInsert
+    createUserDto = await this.userRepository.create(createUserDto);
+    return await this.userRepository.save(createUserDto);
   }
 
   // 更新用户信息
@@ -45,12 +38,16 @@ export class UserService {
       .set(info)
       .where('user.id=:id', { id: user.id })
       .execute();
-    return await this.userRepository.findOne({ id: user.id });
+    return await this.userRepository.findOne({
+      where: { id: user.id },
+    });
   }
 
   // 根据用户名获取用户信息
   async getUserInfo(id: string): Promise<User> {
-    return await this.userRepository.findOne(id);
+    return await this.userRepository.findOne({
+      where: { id },
+    });
   }
 
   // 修改用户密码
