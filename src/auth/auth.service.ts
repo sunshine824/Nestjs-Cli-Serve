@@ -45,7 +45,7 @@ export class AuthService {
       .getOne();
 
     return {
-      permissionList: listToTree(Role.menus || []), // 菜单权限,
+      permissionList: listToTree(Role?.menus || []), // 菜单权限,
       userInfo: user,
       token,
     };

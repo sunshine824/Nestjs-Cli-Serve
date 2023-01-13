@@ -5,6 +5,7 @@ import {
   BeforeInsert,
   OneToOne,
   JoinColumn,
+  BeforeUpdate,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { OrganizationEntity } from 'src/organization/entities/organization.entity';
@@ -24,6 +25,12 @@ export class User {
 
   @Column('bigint')
   phone: number; // 手机号
+
+  @Column()
+  sex: number; // 性别
+
+  @Column({ nullable: true })
+  birthday: Date; // 出生日期
 
   @Column() // 表示查询时隐藏此列
   @Exclude() // 返回数据时忽略password，配合ClassSerializerInterceptor使用
@@ -54,6 +61,11 @@ export class User {
     default: () => 'CURRENT_TIMESTAMP',
   })
   updateTime: Date;
+
+  @BeforeUpdate()
+  updateTimestamp() {
+    this.updateTime = new Date();
+  }
 
   @BeforeInsert()
   async encryptPwd() {

@@ -1,6 +1,7 @@
 import { MenuEntity } from 'src/menu/entities/menu.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
+  BeforeUpdate,
   Column,
   Entity,
   JoinTable,
@@ -41,4 +42,9 @@ export class RoleEntity {
     default: () => 'CURRENT_TIMESTAMP',
   })
   updateTime: Date;
+
+  @BeforeUpdate()
+  updateTimestamp() {
+    this.updateTime = new Date();
+  }
 }

@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 import { compareSync, hashSync } from 'bcryptjs';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
@@ -9,6 +9,16 @@ import { UpdatePassDto } from './dto/updatePass-user.dto';
 import { OrganizationService } from 'src/organization/organization.service';
 import { RoleService } from 'src/role/role.service';
 import { RedisInstance } from 'src/cache/redis';
+import { IPageResult, Pagination } from 'src/utils/pagination';
+import { QueryUserDto } from './dto/query-user.dto';
+import { OrganizationEntity } from 'src/organization/entities/organization.entity';
+import { RoleEntity } from 'src/role/entities/role.entity';
+import { getUserPageSql } from 'src/utils/sql';
+
+type IUser = User & {
+  roleInfo?: RoleEntity;
+  organizationInfo?: OrganizationEntity;
+};
 
 @Injectable()
 export class UserService {
@@ -45,10 +55,19 @@ export class UserService {
   }
 
   // 根据用户名获取用户信息
-  async getUserInfo(id: string): Promise<User> {
-    return await this.userRepository.findOne({
-      where: { id },
-    });
+  async getUserInfo(id: string): Promise<IUser> {
+    const user: IUser = await this.userRepository.findOne({ id });
+    const organizationInfo = await getConnection()
+      .createQueryBuilder(OrganizationEntity, 'organization')
+      .where('organization.id = :id', { id: user.organizationId })
+      .getOne();
+    const roleInfo = await getConnection()
+      .createQueryBuilder(RoleEntity, 'role')
+      .where('role.id = :id', { id: user.roleId })
+      .getOne();
+    user.roleInfo = roleInfo;
+    user.organizationInfo = organizationInfo;
+    return user;
   }
 
   // 注销登录
@@ -76,5 +95,20 @@ export class UserService {
       .set({ password: hashSync(info.newPassword, 10) })
       .where('user.id=:id', { id: user.id })
       .execute();
+  }
+
+  // 获取用户列表
+  async getPage(query: QueryUserDto): Promise<IPageResult<User>> {
+    const page = (query.pageNo - 1) * query.pageSize;
+    const limit = page + query.pageSize;
+    const pagination = new Pagination<User>(
+      { current: query.pageNo, size: query.pageSize },
+      User,
+    );
+    const result = pagination.findByPageSql<any>({
+      sql: getUserPageSql(),
+      parameters: ['u.username = :name', { name: 'chenxin' }],
+    });
+    return result;
   }
 }

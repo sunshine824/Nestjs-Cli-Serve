@@ -14,6 +14,12 @@ export class CreateUserDto {
   @IsNumber({}, { message: '手机号只能为数字' })
   readonly phone: number;
 
+  @ApiPropertyOptional({ description: '性别' })
+  readonly sex: number;
+
+  @ApiPropertyOptional({ description: '出生日期' })
+  readonly birthday: Date;
+
   @ApiProperty({ description: '用户角色id' })
   readonly roleId: string;
 

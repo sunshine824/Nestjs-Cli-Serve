@@ -1,5 +1,6 @@
 import { RoleEntity } from 'src/role/entities/role.entity';
 import {
+  BeforeUpdate,
   Column,
   Entity,
   ManyToMany,
@@ -46,4 +47,9 @@ export class MenuEntity {
     default: () => 'CURRENT_TIMESTAMP',
   })
   updateTime: Date;
+
+  @BeforeUpdate()
+  updateTimestamp() {
+    this.updateTime = new Date();
+  }
 }

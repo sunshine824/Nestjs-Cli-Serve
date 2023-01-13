@@ -62,10 +62,15 @@ export class OrganizationService {
 
   // 删除组织
   async delete(id: string) {
-    const existPost = await this.OrganizationRepository.findOne(id);
-    if (!existPost) {
+    const posts = await this.OrganizationRepository.findByIds(
+      id?.split(',') || [],
+    );
+    if (!posts || !posts.length) {
       throw new HttpException(`id为${id}的菜单不存在`, 400);
     }
-    return await this.OrganizationRepository.remove(existPost);
+    posts.map((item) => {
+      this.OrganizationRepository.remove(item);
+    });
+    return '删除成功';
   }
 }

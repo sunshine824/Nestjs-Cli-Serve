@@ -27,6 +27,7 @@ import { User } from './entities/user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdatePassDto } from './dto/updatePass-user.dto';
+import { QueryUserDto } from './dto/query-user.dto';
 
 @Controller('user')
 @ApiTags('用户管理')
@@ -75,6 +76,14 @@ export class UserController {
     const res = await this.userService.getUserInfo(id);
     delete res.password;
     return res;
+  }
+
+  @Post('getPage')
+  @ApiOperation({ summary: '用户列表' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  async getPage(@Body() data: QueryUserDto) {
+    return await this.userService.getPage(data);
   }
 
   @Post('logout')

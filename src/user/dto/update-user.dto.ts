@@ -9,4 +9,10 @@ export class UpdateUserDto {
 
   @ApiPropertyOptional({ description: '用户邮箱' })
   readonly email: string;
+
+  @ApiPropertyOptional({ description: '用户性别' })
+  readonly sex: number;
+
+  @ApiPropertyOptional({ description: '出生日期' })
+  readonly birthday: Date;
 }

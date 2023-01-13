@@ -1,5 +1,11 @@
 import { User } from 'src/user/entities/user.entity';
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BeforeUpdate,
+  Column,
+  Entity,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('organization')
 export class OrganizationEntity {
@@ -28,4 +34,9 @@ export class OrganizationEntity {
     default: () => 'CURRENT_TIMESTAMP',
   })
   updateTime: Date;
+
+  @BeforeUpdate()
+  updateTimestamp() {
+    this.updateTime = new Date();
+  }
 }
