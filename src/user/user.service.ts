@@ -14,6 +14,7 @@ import { QueryUserDto } from './dto/query-user.dto';
 import { OrganizationEntity } from 'src/organization/entities/organization.entity';
 import { RoleEntity } from 'src/role/entities/role.entity';
 import { getUserPageSql } from 'src/utils/sql';
+import { createQueryCondition } from 'src/utils/utils';
 
 type IUser = User & {
   roleInfo?: RoleEntity;
@@ -88,27 +89,60 @@ export class UserService {
         200,
       );
     }
-
     await this.userRepository
       .createQueryBuilder('user')
       .update(User)
       .set({ password: hashSync(info.newPassword, 10) })
       .where('user.id=:id', { id: user.id })
       .execute();
+    // 清空用户redis
+    const redis = new RedisInstance(0);
+    redis.removeItem(`user-token-${user.id}-${user.username}`);
+
+    return {};
   }
 
   // 获取用户列表
   async getPage(query: QueryUserDto): Promise<IPageResult<User>> {
     const page = (query.pageNo - 1) * query.pageSize;
-    const limit = page + query.pageSize;
     const pagination = new Pagination<User>(
       { current: query.pageNo, size: query.pageSize },
       User,
     );
-    const result = pagination.findByPageSql<any>({
-      sql: getUserPageSql(),
-      parameters: ['u.username = :name', { name: 'chenxin' }],
-    });
+    // const result = pagination.findByPageSql<any>({
+    //   sql: getUserPageSql(),
+    //   parameters: ['u.username = :name', { name: 'chenxin' }],
+    // });
+    const where = createQueryCondition(query, [
+      'username',
+      'nickname',
+      'phone',
+      'roleId',
+      'organizationId',
+      'sex',
+    ]);
+    const db = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect(
+        OrganizationEntity,
+        'organ',
+        'organ.id = user.organizationId',
+      )
+      .leftJoinAndSelect(RoleEntity, 'role', 'role.id = user.roleId')
+      .select(
+        `user.id, user.username, user.nickname, user.avatar, user.email, user.create_time, user.phone, user.organizationId, user.roleId, user.birthday, user.sex, 
+        organ.name as organizationName, 
+        role.name as roleName  
+      `,
+      )
+      // .skip(page)
+      // .take(query.pageSize)
+      .offset(page)
+      .limit(query.pageSize)
+      .where(where)
+      .orderBy('user.create_time', 'DESC');
+
+    const result = pagination.findByPage(db, 'getRawMany');
     return result;
   }
 }

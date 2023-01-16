@@ -27,7 +27,7 @@ export class User {
   phone: number; // 手机号
 
   @Column()
-  sex: number; // 性别
+  sex: number; // 性别 0:男 1:女
 
   @Column({ nullable: true })
   birthday: Date; // 出生日期

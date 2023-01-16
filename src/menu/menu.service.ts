@@ -46,7 +46,10 @@ export class MenuService {
   // 获取菜单结构树
   async getTree(name: string): Promise<MenuDto[]> {
     const data = await this.menuRepository.find({
-      ...(name && { name: Like(`%${name}%`) }), // == where: `name like '%销售%'`
+      where: { ...(name && { name: Like(`%${name}%`) }) }, // == where: `name like '%销售%'`
+      order: {
+        order: 'ASC',
+      },
     });
     const treeData = listToTree<MenuDto>(data);
     return treeData;

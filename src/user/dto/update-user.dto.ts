@@ -15,4 +15,10 @@ export class UpdateUserDto {
 
   @ApiPropertyOptional({ description: '出生日期' })
   readonly birthday: Date;
+
+  @ApiPropertyOptional({ description: '用户角色id', default: '' })
+  readonly roleId: string;
+
+  @ApiPropertyOptional({ description: '所属机构id', default: '' })
+  readonly organizationId: string;
 }

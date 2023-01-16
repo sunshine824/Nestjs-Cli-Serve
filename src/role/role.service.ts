@@ -2,6 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MenuService } from 'src/menu/menu.service';
 import { IPageResult, Pagination } from 'src/utils/pagination';
+import { createQueryCondition } from 'src/utils/utils';
 import { Repository } from 'typeorm';
 import { QueryRoleDto } from './dto/query-role.dto';
 import { RoleDto } from './dto/role.dto';
@@ -71,7 +72,7 @@ export class RoleService {
     const db = this.RoleRepository.createQueryBuilder('role')
       .skip(page)
       .take(limit)
-      .where(`role.name like '%${query.name}%'`)
+      .where(createQueryCondition(query, ['name']))
       .orderBy('create_time', 'DESC');
 
     const result = pagination.findByPage(db);

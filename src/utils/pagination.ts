@@ -42,24 +42,10 @@ export class Pagination<T> {
     this.entity = entity;
   }
 
-  // 生成查询条件
-  private generateCondition(builder, tableName) {
-    let db = getConnection().createQueryBuilder<T>(this.entity, tableName);
-    Object.keys(builder).map((key) => {
-      const type = Object.prototype.toString.call(builder[key]);
-      const isArray = type === '[object Array]';
-      if (isArray) {
-        db = db[key](...builder[key]);
-      } else {
-        db = db[key](builder[key]);
-      }
-    });
-    return db;
-  }
-
   // 分页查询
-  public async findByPage(db: SelectQueryBuilder<T>) {
-    const [data, total] = await db.getManyAndCount();
+  public async findByPage(db: SelectQueryBuilder<T>, queryFun = 'getMany') {
+    const data = await db[queryFun]();
+    const total = await db.getCount();
     // 总页数
     const pages = Math.ceil(total / this.Page.size);
     // 返回分页数据

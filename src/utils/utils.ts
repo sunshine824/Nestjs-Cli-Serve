@@ -35,3 +35,23 @@ export const listToTree = <T>(data, replaceFields?: ReplaceFields): T[] => {
   });
   return treeData;
 };
+
+/**
+ * 生成where查询条件
+ * @param query 接口获取到的查询参数
+ * @param keys 需要返回的查询参数
+ */
+
+export const createQueryCondition = (
+  query: { [key: string]: any },
+  keys: string[],
+): { [key: string]: any } => {
+  let newMap = {};
+  const fields = Object.keys(query);
+  fields.forEach((key) => {
+    if (keys.includes(key) && query[key] != undefined && query[key] != null) {
+      newMap[key] = query[key];
+    }
+  });
+  return newMap;
+};
